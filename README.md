@@ -10,7 +10,7 @@ api文档地址   https://platform.openai.com/docs/introduction
 
 部分截图
 
-![主页面](https://github.com/XiaoRanLiu3119/hanhan_video_player/blob/master/screenshot/main.jpg)
+![聊天界面](https://github.com/XiaoRanLiu3119/LxrChatGpt/blob/main/chat.png)
 
 ## 开发环境
 - Android Studio 2022.2.1Beta1

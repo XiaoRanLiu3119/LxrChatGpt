@@ -46,4 +46,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             ActivityUtils.finishAllActivities(true)
         }
     }
+
+    fun updateTab(index: Int) {
+        if (index < fragments.size) {
+            binding.vp2.currentItem = index
+        }
+    }
 }

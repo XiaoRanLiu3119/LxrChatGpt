@@ -23,7 +23,6 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
 
-        <activity android:name="com.lxr.chat_gpt.ui.LoginActivity"/>
         <activity
             android:name="com.lxr.chat_gpt.ui.MainActivity"
             android:launchMode="singleTask"

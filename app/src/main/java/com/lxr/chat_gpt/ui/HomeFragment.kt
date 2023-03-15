@@ -6,13 +6,17 @@ import com.blankj.utilcode.util.ToastUtils
 import com.drake.brv.utils.addModels
 import com.drake.brv.utils.setup
 import com.dyne.myktdemo.base.BaseFragment
+import com.lxj.xpopup.XPopup
+import com.lxj.xpopup.interfaces.OnConfirmListener
 import com.lxr.chat_gpt.R
+import com.lxr.chat_gpt.constants.CacheKey
 import com.lxr.chat_gpt.constants.URL
 import com.lxr.chat_gpt.databinding.FragmentHomeBinding
 import com.lxr.chat_gpt.entity.ChatContentReq
 import com.lxr.chat_gpt.entity.ChatContentRes
 import com.lxr.chat_gpt.entity.ChatMessage
 import com.lxr.chat_gpt.entity.MessageReq
+import com.lxr.chat_gpt.utils.MmkvUtil
 import kotlinx.coroutines.launch
 import me.hgj.jetpackmvvm.ext.view.clickNoRepeat
 import me.hgj.jetpackmvvm.ext.view.gone
@@ -36,6 +40,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     val contextMsg = ArrayDeque<String>(2)
 
     override fun initView() {
+        if(MmkvUtil.getString(CacheKey.TOKEN).isNullOrEmpty()){
+            showApiKeyPopup()
+        }
         binding.rv.setup {
             addType<ChatMessage> {
                 if (isUser) {
@@ -47,6 +54,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
 
         binding.btnSend.clickNoRepeat {
+            if (MmkvUtil.getString(CacheKey.TOKEN).isNullOrEmpty()) {
+                showApiKeyPopup()
+                return@clickNoRepeat
+            }
             // 直接将输入的消息添加到列表
             val inputMessage = binding.etMessage.textString()
             addMessage2List(inputMessage, true)
@@ -100,5 +111,24 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     override fun lazyLoadData() {
+    }
+
+    private fun showApiKeyPopup() {
+        XPopup.Builder(context)
+            .asConfirm(
+                "提示",
+                "尚未配置api-key,暂时无法使用聊天功能",
+                "再说吧",
+                "去配置",
+                object : OnConfirmListener {
+                    override fun onConfirm() {
+                        val mainActivity = getActivity() as MainActivity
+                        mainActivity.updateTab(1)
+                    }
+                },
+                null,
+                false
+            )
+            .show()
     }
 }

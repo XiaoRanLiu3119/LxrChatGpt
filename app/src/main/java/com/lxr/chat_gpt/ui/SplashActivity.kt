@@ -10,12 +10,8 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
 
     override fun initView() {
         Handler().postDelayed({
-            if (MmkvUtil.getString("token").isNullOrEmpty()){
-                startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
-            } else{
-                startActivity(Intent(this@SplashActivity, MainActivity::class.java))
-            }
+            startActivity(Intent(this@SplashActivity, MainActivity::class.java))
             finish()
-        },1200)
+        },500)
     }
 }

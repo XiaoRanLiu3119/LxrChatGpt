@@ -61,7 +61,7 @@ class MyApp : Application() {
         RxHttpPlugins.init(client)
             .setDebug(BuildConfig.DEBUG,true,2)  //调试模式/分段打印/json数据格式化输出
             .setOnParamAssembly {
-                it.addHeader("Authorization", MmkvUtil.getString(CacheKey.TOKEN))
+                it.addHeader("Authorization", "Bearer ${MmkvUtil.getString(CacheKey.TOKEN)}")
             }
     }
 

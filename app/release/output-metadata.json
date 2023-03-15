@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.lxr.chat_gpt",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 2,
+      "versionName": "0.0.2",
+      "outputFile": "LxrChatGpt_v0.0.2_release_20230315.apk"
+    }
+  ],
+  "elementType": "File"
+}

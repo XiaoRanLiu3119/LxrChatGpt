@@ -4,8 +4,14 @@
 
 ## 提示
 项目代码为熟悉kotlin所编写,且未做优化,仅供参考
+
+
+[ 下载Demo ](https://github.com/XiaoRanLiu3119/LxrChatGpt/releases/tag/pkg_release)
+
 api-key  https://platform.openai.com/account/api-keys
+
 配置api-key后即可调用api
+
 api文档地址   https://platform.openai.com/docs/introduction
 
 部分截图

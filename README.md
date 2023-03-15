@@ -1,0 +1,2 @@
+# lxr_chat_gpt
+kotlin开发的chatgpt安卓客户端,开发来自用,记录openai的api使用方法等

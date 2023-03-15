@@ -1,0 +1,19 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        google()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        maven { url 'https://jitpack.io' }
+        mavenCentral()
+        maven { url "https://maven.aliyun.com/repository/public" }
+        maven { url 'https://repo1.maven.org/maven2/' }
+        google()
+    }
+}
+rootProject.name = "LxrChatGpt"
+include ':app'

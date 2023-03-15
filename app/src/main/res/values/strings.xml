@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">LxrChatGpt</string>
+    <string name="home">聊天</string>
+    <string name="setting">设置</string>
+</resources>

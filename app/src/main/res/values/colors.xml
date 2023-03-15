@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#292635</color>
+    <color name="colorPrimaryDark">#202223</color>
+    <color name="colorAccent">#ef9608</color>
+
+    <!--    通用颜色-->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="blue">#1e80ff</color>
+    <color name="light_gray_color">#e6e6e6</color>
+
+    <!--    制定颜色-->
+    <!--    页面背景色,activity.fragment等使用,主题中windowBackground默认是白色-->
+    <color name="bg_page">#000000</color>
+    <!--    列表背景色,标题栏导航栏,列表等-->
+    <color name="bg_list">#292635</color>
+    <!--    文字主要颜色-->
+    <color name="textPrimary">#333333</color>
+    <!--    文字主要颜色更轻版,列表条目的标题等-->
+    <color name="textColorPrimaryLighter">#666666</color>
+    <!--    提示文本,edittext等-->
+    <color name="textHint">#999999</color>
+    <!--    警示黄色-->
+    <color name="warn">#ffcb6b</color>
+
+    <!--    渐变主题色-->
+    <color name="primaryGradientStart">#383838</color>
+    <color name="primaryGradientEnd">#202223</color>
+
+
+</resources>

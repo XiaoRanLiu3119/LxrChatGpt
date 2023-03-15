@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+
+    <!--    整个应用主题-->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!--应用的主要色调,actionBar默认使用该颜色,Toolbar导航栏的底色-->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <!--    应用的主要暗色调,statusBarColor默认使用该颜色-->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <!--CheckBox,RadioButton,SwitchCompat等一般控件的选中效果默认采用该颜色-->
+        <item name="colorAccent">@color/colorAccent</item>
+        <!--        <item name="android:textColorPrimary">@color/common_white</item>-->
+        <item name="android:textColorHint">@color/textHint</item>
+        <!--activity背景色,默认白色,深色模式主题可变透明或黑色,避免系统内存不足/长时间未操作返回应用时activity开启和跳转会白屏-->
+        <!--        <item name="android:windowBackground">@android:color/transparent</item>-->
+    </style>
+
+    <!--    开屏页主题-->
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+</resources>

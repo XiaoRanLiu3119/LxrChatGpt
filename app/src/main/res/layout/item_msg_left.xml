@@ -8,7 +8,7 @@
 
         <variable
             name="m"
-            type="com.lxr.chat_gpt.entity.ChatMessage" />
+            type="com.lxr.chat_gpt.entity.ChatMsg" />
 
     </data>
 
@@ -27,30 +27,37 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tvMessage"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginRight="16dp"
-            android:autoLink="web"
             android:background="@drawable/bg_msg_bubble_left"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:text="@{m.content}"
-            android:textColor="@color/black"
-            android:textIsSelectable="true"
-            android:textSize="12dp"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintLeft_toRightOf="@id/ivAvatar"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1"
-            tools:text="How are you ?" />
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center_vertical">
+            <EditText
+                android:id="@+id/et_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:cursorVisible="true"
+                android:background="@null"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:text="@{m.content}"
+                android:textColor="@color/black"
+                android:textIsSelectable="true"
+                android:textSize="12dp"
+                tools:text="How are you ?" />
+        </LinearLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

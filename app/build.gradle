@@ -67,12 +67,6 @@ android {
     }
 }
 
-kapt {
-    arguments {
-        arg("rxhttp_package", "rxhttp")  //指定RxHttp类包名，可随意指定
-    }
-}
-
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -85,16 +79,14 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'com.google.android.material:material:1.4.0'
 
+    //OpenAI的kt版本api框架  OpenAI API client for Kotlin  https://github.com/Aallam/openai-kotlin
+    implementation 'com.aallam.openai:openai-client:3.1.0'
+    //Ktor
+    implementation("io.ktor:ktor-client-okhttp:2.2.3")
+
     def lifecycle_version = "2.5.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-
-    // 网络
-    def rxHttp_version = '3.0.2'
-    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
-    implementation "com.github.liujingxing.rxhttp:rxhttp:$rxHttp_version"
-    // ksp/kapt/annotationProcessor 选其一
-    kapt "com.github.liujingxing.rxhttp:rxhttp-compiler:$rxHttp_version"
 
     //图片加载
     implementation 'com.github.bumptech.glide:glide:4.12.0'

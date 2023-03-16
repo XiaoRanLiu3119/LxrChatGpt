@@ -24,7 +24,9 @@ api文档地址   https://platform.openai.com/docs/introduction
 - gradle:7.3.3-bin
 - gradle plugin version:7.2.2
 ## 项目中用到的库,感谢大佬们
-- RecyclerView框架 [ BRV](https://github.com/liangjingkanji/BRV)
+https://github.com/Aallam/openai-kotlin
+- [ openai-kotlin](https://github.com/Aallam/openai-kotlin)
+- [ BRV](https://github.com/liangjingkanji/BRV)
 - autosize
 - immersionbar
 - XPopup

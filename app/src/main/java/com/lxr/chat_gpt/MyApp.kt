@@ -1,6 +1,8 @@
 package com.lxr.chat_gpt
 
 import android.app.Application
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.drake.brv.utils.BRV
 import com.lxj.xpopup.XPopup
 import com.lxr.chat_gpt.constants.CacheKey
@@ -10,10 +12,11 @@ import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.tencent.mmkv.MMKV
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
 import me.jessyan.autosize.AutoSizeConfig
 import okhttp3.OkHttpClient
-import rxhttp.RxHttpPlugins
-import rxhttp.wrapper.ssl.HttpsUtils
+import java.time.Duration
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLSession
@@ -47,22 +50,19 @@ class MyApp : Application() {
         initNet()
     }
 
-
-    private fun initNet(){
-        val sslParams = HttpsUtils.getSslSocketFactory()
-        val client: OkHttpClient = OkHttpClient.Builder()
-            .connectTimeout(2, TimeUnit.MINUTES)
-            .readTimeout(2, TimeUnit.MINUTES)
-            .writeTimeout(2, TimeUnit.MINUTES)
-            .sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager) //添加信任证书
-            .hostnameVerifier(HostnameVerifier { hostname: String?, session: SSLSession? -> true }) //忽略host验证
-            .build()
-
-        RxHttpPlugins.init(client)
-            .setDebug(BuildConfig.DEBUG,true,2)  //调试模式/分段打印/json数据格式化输出
-            .setOnParamAssembly {
-                it.addHeader("Authorization", "Bearer ${MmkvUtil.getString(CacheKey.TOKEN)}")
+    private fun initNet() {
+        HttpClient(OkHttp) {
+            engine {
+                // this: OkHttpConfig
+                config {
+                    // this: OkHttpClient.Builder
+                    followRedirects(true)
+                    connectTimeout(1,TimeUnit.MINUTES)
+                    callTimeout(1,TimeUnit.MINUTES)
+                    readTimeout(1,TimeUnit.MINUTES)
+                }
             }
+        }
     }
 
 }

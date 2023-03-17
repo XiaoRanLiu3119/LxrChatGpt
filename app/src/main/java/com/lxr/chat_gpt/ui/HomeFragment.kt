@@ -1,5 +1,6 @@
 package com.lxr.chat_gpt.ui
 
+import android.app.PendingIntent.CanceledException
 import android.content.res.ColorStateList
 import android.text.Selection
 import android.widget.EditText
@@ -15,6 +16,7 @@ import com.aallam.openai.client.OpenAI
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.SpanUtils
+import com.blankj.utilcode.util.ToastUtils
 import com.drake.brv.utils.addModels
 import com.drake.brv.utils.bindingAdapter
 import com.drake.brv.utils.setup
@@ -23,6 +25,7 @@ import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.interfaces.OnConfirmListener
 import com.lxr.chat_gpt.R
 import com.lxr.chat_gpt.constants.CacheKey
+import com.lxr.chat_gpt.constants.Constants
 import com.lxr.chat_gpt.databinding.FragmentHomeBinding
 import com.lxr.chat_gpt.entity.ChatMsg
 import com.lxr.chat_gpt.utils.MmkvUtil
@@ -38,6 +41,7 @@ import me.hgj.jetpackmvvm.ext.view.clickNoRepeat
 import me.hgj.jetpackmvvm.ext.view.gone
 import me.hgj.jetpackmvvm.ext.view.textString
 import me.hgj.jetpackmvvm.ext.view.visible
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * @Author : Liu XiaoRan
@@ -51,7 +55,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     /**
      * 限制存储的上下文消息条数,多了会消耗更多重复的tokens,2/4
      */
-    val contextMsg = ArrayDeque<String>(2)
+    val contextMsg = ArrayDeque<String>(4)
 
     var openAI: OpenAI? = null
     var job: Job? = null
@@ -80,7 +84,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
 
             if (binding.btnSend.text == "停止") {
-                job?.cancel()
+                job?.cancel(CancellationException())
             } else {
                 // 调取chatGpt接口
                 job = lifecycleScope.launch {
@@ -99,23 +103,29 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     private suspend fun getPrintResult(scope: CoroutineScope, content: String) {
+        // 构建参数
         val chatCompletionRequest = ChatCompletionRequest(
             model = ModelId("gpt-3.5-turbo"),
             messages = listOf(
                 ChatMessage(
                     role = ChatRole.User,
-                    content = content
+                    content = if (contextMsg.size != 0) "$contextMsg\n$content" else content
                 )
             )
         )
+        LogUtils.d("请求体::::\n${if (contextMsg.size != 0) "$contextMsg\n$content" else content}")
 
         println("\n>️ Creating chat completions stream...")
+        // 根据请求状态更新文字和ui
         val btnSend = binding.btnSend
+        val adapter = binding.rv.bindingAdapter
+
         if (openAI != null) {
             openAI!!.chatCompletions(chatCompletionRequest)
                 .onStart {
                     btnSend.text = "停止"
-                    btnSend.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.red))
+                    btnSend.backgroundTintList =
+                        ColorStateList.valueOf(resources.getColor(R.color.red))
 
                     binding.tvTipAccepting.text = "消息接收中..."
                     binding.tvTipAccepting.visible()
@@ -129,28 +139,44 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     val contentStr = it.choices.first().delta?.content.orEmpty()
                     print(contentStr)
 
+                    // 累加消息文本
                     currentEditMsg += contentStr
 
-                    val adapter = binding.rv.bindingAdapter
+                    // 更新最新条目的文本
                     val model = adapter.getModel<ChatMsg>(adapter.modelCount - 1)
                     model.content = currentEditMsg
                     model.notifyChange()
                 }
                 .onCompletion {
-                    LogUtils.d("完成一次")
+
                     btnSend.text = "发送"
-                    btnSend.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
+                    btnSend.backgroundTintList =
+                        ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
                     binding.tvTipAccepting.gone()
+
+                    val currentModels: List<ChatMsg> = adapter.mutable as MutableList<ChatMsg>
+                    val userMsg = currentModels.lastOrNull { it.role == ChatRole.User }
+                    val assistantMsg = currentModels.lastOrNull { it.role == ChatRole.Assistant }
+
+                    // 更新上下文
+                    if (contextMsg.size >= 4) {
+                        contextMsg.removeFirst()
+                        contextMsg.removeFirst()
+                    }
+                    contextMsg.addLast("User: ${userMsg?.content}")
+                    contextMsg.addLast("Bot: ${assistantMsg?.content}")
+
+
+                    LogUtils.d("当前上下文::::\n$contextMsg")
                 }.catch {
-                    LogUtils.d("取消任务")
-                    LogUtils.e(it.cause)
+                    LogUtils.e(it.toString())
                 }
                 .launchIn(scope)
                 .join()
         }
     }
 
-    private fun addMessage2List(content: String, chatRole: ChatRole){
+    private fun addMessage2List(content: String, chatRole: ChatRole) {
         val chatMessage = ChatMsg(content = content, role = chatRole)
         binding.rv.addModels(
             arrayListOf(

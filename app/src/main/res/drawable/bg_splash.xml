@@ -5,7 +5,7 @@
             <solid android:color="@color/colorPrimary" />
         </shape>
     </item>
-    <item >
+    <item>
         <bitmap
             android:gravity="center"
             android:src="@drawable/iv_splash" />

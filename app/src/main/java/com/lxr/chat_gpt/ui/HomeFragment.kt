@@ -78,6 +78,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
 
         binding.btnSend.clickNoRepeat {
+            binding.etMessage.clearFocus()
+            it.postDelayed({
+                KeyboardUtils.hideSoftInput(it)
+            }, 400)
+
             if (MmkvUtil.getString(CacheKey.TOKEN).isNullOrEmpty()) {
                 showApiKeyPopup()
                 return@clickNoRepeat

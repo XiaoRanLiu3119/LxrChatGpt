@@ -37,7 +37,7 @@ https://github.com/Aallam/openai-kotlin
 - [x] model: gpt-3.5-turbo,
 - [x] 基本问答,默认仅可关联最近一条上下文,可代码里更改 beta
 - [x] 回答呈打字效果逐字输入
-- [ ] 代码区域样式独立且可复制
+- [ ] 代码区域样式独立且可一键复制
 - [ ] 生成图片api
 - [ ] 翻译api
 - [ ] 其余

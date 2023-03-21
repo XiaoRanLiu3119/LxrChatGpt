@@ -11,9 +11,9 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 2,
-      "versionName": "0.0.2",
-      "outputFile": "LxrChatGpt_v0.0.2_release_20230317.apk"
+      "versionCode": 3,
+      "versionName": "0.0.3",
+      "outputFile": "LxrChatGpt_v0.0.3_release_20230321.apk"
     }
   ],
   "elementType": "File"

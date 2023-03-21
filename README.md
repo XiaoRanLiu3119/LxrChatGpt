@@ -4,6 +4,7 @@
 
 ## 提示
 项目代码为熟悉kotlin所编写,且未做优化,仅供参考
+上下文联系过多会消耗成倍的tokens,目前限制两组对话
 
 
 [ 下载Demo ](https://github.com/XiaoRanLiu3119/LxrChatGpt/releases/tag/pkg_release)
@@ -35,7 +36,8 @@ https://github.com/Aallam/openai-kotlin
 ## 进度
 - [x] model: gpt-3.5-turbo,
 - [x] 基本问答,默认仅可关联最近一条上下文,可代码里更改 beta
-- [ ] 回答呈打字效果逐字输入
+- [x] 回答呈打字效果逐字输入
+- [ ] 代码区域样式独立且可复制
 - [ ] 生成图片api
 - [ ] 翻译api
 - [ ] 其余

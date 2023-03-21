@@ -43,14 +43,11 @@
             android:layout_marginTop="12dp"
             android:layout_marginRight="16dp"
             android:gravity="center_vertical">
-            <EditText
-                android:id="@+id/et_msg"
+            <TextView
+                android:id="@+id/tv_msg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:cursorVisible="true"
                 android:background="@null"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
                 android:text="@{m.content}"
                 android:textColor="@color/black"
                 android:textIsSelectable="true"

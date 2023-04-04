@@ -25,8 +25,8 @@ android {
         applicationId "com.lxr.chat_gpt"
         minSdk 23
         targetSdk 32
-        versionCode 3
-        versionName "0.0.3"
+        versionCode 4
+        versionName "0.0.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -80,7 +80,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
 
     //OpenAI的kt版本api框架  OpenAI API client for Kotlin  https://github.com/Aallam/openai-kotlin
-    implementation 'com.aallam.openai:openai-client:3.1.0'
+    implementation 'com.aallam.openai:openai-client:3.2.0'
     //Ktor
     implementation("io.ktor:ktor-client-okhttp:2.2.3")
 

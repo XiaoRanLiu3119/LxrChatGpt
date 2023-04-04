@@ -1,21 +1,18 @@
 package com.lxr.chat_gpt.ui
 
-import android.app.PendingIntent.CanceledException
 import android.content.res.ColorStateList
-import android.text.Selection
-import android.widget.EditText
-import androidx.databinding.Observable
-import androidx.databinding.Observable.OnPropertyChangedCallback
+import android.text.TextUtils
 import androidx.lifecycle.lifecycleScope
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
+import com.aallam.openai.api.exception.OpenAIAPIException
+import com.aallam.openai.api.exception.OpenAITimeoutException
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.LogUtils
-import com.blankj.utilcode.util.SpanUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.drake.brv.utils.addModels
 import com.drake.brv.utils.bindingAdapter
@@ -25,7 +22,6 @@ import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.interfaces.OnConfirmListener
 import com.lxr.chat_gpt.R
 import com.lxr.chat_gpt.constants.CacheKey
-import com.lxr.chat_gpt.constants.Constants
 import com.lxr.chat_gpt.databinding.FragmentHomeBinding
 import com.lxr.chat_gpt.entity.ChatMsg
 import com.lxr.chat_gpt.utils.MmkvUtil
@@ -57,13 +53,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
      */
     val contextMsg = ArrayDeque<String>(4)
 
-    var openAI: OpenAI? = null
     var job: Job? = null
     var currentEditMsg = ""
 
     override fun initView() {
-        openAI = MmkvUtil.getString(CacheKey.TOKEN)?.let { OpenAI(it) }
-
         if (MmkvUtil.getString(CacheKey.TOKEN).isNullOrEmpty()) {
             showApiKeyPopup()
         }
@@ -125,8 +118,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         val btnSend = binding.btnSend
         val adapter = binding.rv.bindingAdapter
 
-        if (openAI != null) {
-            openAI!!.chatCompletions(chatCompletionRequest)
+        MmkvUtil.getString(CacheKey.TOKEN)?.let {
+            OpenAI(it).chatCompletions(chatCompletionRequest)
                 .onStart {
                     btnSend.text = "停止"
                     btnSend.backgroundTintList =
@@ -153,7 +146,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     model.notifyChange()
                 }
                 .onCompletion {
-
                     btnSend.text = "发送"
                     btnSend.backgroundTintList =
                         ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
@@ -171,10 +163,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     contextMsg.addLast("User: ${userMsg?.content}")
                     contextMsg.addLast("Bot: ${assistantMsg?.content}")
 
-
                     LogUtils.d("当前上下文::::\n$contextMsg")
+
+                    if (TextUtils.isEmpty(assistantMsg?.content)) {
+                        adapter.mutable.remove(assistantMsg)
+                    }
                 }.catch {
                     LogUtils.e(it.toString())
+                    when (it) {
+                        is OpenAITimeoutException -> ToastUtils.showLong("连接超时,请检查科学上网连接状态")
+                        is OpenAIAPIException -> ToastUtils.showLong(it.message)
+                    }
                 }
                 .launchIn(scope)
                 .join()

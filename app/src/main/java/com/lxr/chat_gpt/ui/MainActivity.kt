@@ -5,6 +5,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.dyne.myktdemo.base.BaseActivity
+import com.lxr.chat_gpt.R
 import com.lxr.chat_gpt.databinding.ActivityMainBinding
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {
@@ -41,7 +42,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     fun updateTab(index: Int) {
         if (index < fragments.size) {
-            binding.vp2.currentItem = index
+            if (index == 0) {
+                binding.bottomNav.selectedItemId = R.id.tab_home
+            } else {
+                binding.bottomNav.selectedItemId = R.id.tab_setting
+            }
         }
     }
 }

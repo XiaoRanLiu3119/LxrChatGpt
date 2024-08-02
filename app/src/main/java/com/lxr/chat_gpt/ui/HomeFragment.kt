@@ -11,6 +11,8 @@ import com.aallam.openai.api.exception.OpenAIAPIException
 import com.aallam.openai.api.exception.OpenAITimeoutException
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import com.aallam.openai.client.OpenAIConfig
+import com.aallam.openai.client.OpenAIHost
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils
@@ -119,7 +121,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         val adapter = binding.rv.bindingAdapter
 
         MmkvUtil.getString(CacheKey.TOKEN)?.let {
-            OpenAI(it).chatCompletions(chatCompletionRequest)
+            OpenAI(
+                config = OpenAIConfig(token = it, host = OpenAIHost(baseUrl = "https://api.chatanywhere.tech"))
+            ).chatCompletions(chatCompletionRequest)
                 .onStart {
                     btnSend.text = "停止"
                     btnSend.backgroundTintList =

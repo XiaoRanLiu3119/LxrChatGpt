@@ -50,10 +50,12 @@ import kotlin.coroutines.cancellation.CancellationException
 @OptIn(BetaOpenAI::class)
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
+    val conversationLimit = 8
+
     /**
      * 限制存储的上下文消息条数,多了会消耗更多重复的tokens,2/4
      */
-    val contextMsg = ArrayDeque<String>(4)
+    val contextMsg = ArrayDeque<String>(conversationLimit)
 
     var job: Job? = null
     var currentEditMsg = ""
@@ -105,7 +107,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     private suspend fun getPrintResult(scope: CoroutineScope, content: String) {
         // 构建参数
         val chatCompletionRequest = ChatCompletionRequest(
-            model = ModelId("gpt-3.5-turbo"),
+            model = ModelId(MmkvUtil.getString(CacheKey.CHAT_MODEL).toString()),
             messages = listOf(
                 ChatMessage(
                     role = ChatRole.User,
@@ -120,68 +122,75 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         val btnSend = binding.btnSend
         val adapter = binding.rv.bindingAdapter
 
-        MmkvUtil.getString(CacheKey.TOKEN)?.let {
-            OpenAI(
-                config = OpenAIConfig(token = it, host = OpenAIHost(baseUrl = "https://api.chatanywhere.tech"))
-            ).chatCompletions(chatCompletionRequest)
-                .onStart {
-                    btnSend.text = "停止"
-                    btnSend.backgroundTintList =
-                        ColorStateList.valueOf(resources.getColor(R.color.red))
+        OpenAI(
+            config = OpenAIConfig(
+                token = MmkvUtil.getString(CacheKey.TOKEN).toString(),
+                host = OpenAIHost(baseUrl = MmkvUtil.getString(CacheKey.DOMAIN_URL).toString())
+            )
+        ).chatCompletions(chatCompletionRequest)
+            .onStart {
+                btnSend.text = "停止"
+                btnSend.backgroundTintList =
+                    ColorStateList.valueOf(resources.getColor(R.color.red))
 
-                    binding.tvTipAccepting.text = "消息接收中..."
-                    binding.tvTipAccepting.visible()
+                binding.tvTipAccepting.text = "消息接收中..."
+                binding.tvTipAccepting.visible()
 
-                    currentEditMsg = ""
-                    addMessage2List(currentEditMsg, ChatRole.Assistant)
+                currentEditMsg = ""
+                addMessage2List(currentEditMsg, ChatRole.Assistant)
+            }
+            .onEach {
+                LogUtils.d(it.model.id)
+                binding.tvTipAccepting.text = "typing..."
+
+                val contentStr = it.choices.first().delta?.content.orEmpty()
+                print(contentStr)
+
+                // 累加消息文本
+                currentEditMsg += contentStr
+
+                // 更新最新条目的文本
+                val model = adapter.getModel<ChatMsg>(adapter.modelCount - 1)
+                model.content = currentEditMsg
+                model.notifyChange()
+            }
+            .onCompletion {
+                btnSend.text = "发送"
+                btnSend.backgroundTintList =
+                    ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
+                binding.tvTipAccepting.gone()
+
+                val currentModels: List<ChatMsg> = adapter.mutable as MutableList<ChatMsg>
+                val userMsg = currentModels.lastOrNull { it.role == ChatRole.User }
+                val assistantMsg = currentModels.lastOrNull { it.role == ChatRole.Assistant }
+
+                // 更新上下文
+                if (contextMsg.size >= conversationLimit) {
+                    contextMsg.removeFirst()
+                    contextMsg.removeFirst()
                 }
-                .onEach {
-                    binding.tvTipAccepting.text = "typing..."
+                contextMsg.addLast("User: ${userMsg?.content}")
+                contextMsg.addLast("Bot: ${assistantMsg?.content}")
 
-                    val contentStr = it.choices.first().delta?.content.orEmpty()
-                    print(contentStr)
+                LogUtils.d("当前上下文::::\n$contextMsg")
 
-                    // 累加消息文本
-                    currentEditMsg += contentStr
-
-                    // 更新最新条目的文本
-                    val model = adapter.getModel<ChatMsg>(adapter.modelCount - 1)
-                    model.content = currentEditMsg
-                    model.notifyChange()
+                if (TextUtils.isEmpty(assistantMsg?.content)) {
+                    adapter.mutable.remove(assistantMsg)
                 }
-                .onCompletion {
-                    btnSend.text = "发送"
-                    btnSend.backgroundTintList =
-                        ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
-                    binding.tvTipAccepting.gone()
-
-                    val currentModels: List<ChatMsg> = adapter.mutable as MutableList<ChatMsg>
-                    val userMsg = currentModels.lastOrNull { it.role == ChatRole.User }
-                    val assistantMsg = currentModels.lastOrNull { it.role == ChatRole.Assistant }
-
-                    // 更新上下文
-                    if (contextMsg.size >= 4) {
-                        contextMsg.removeFirst()
-                        contextMsg.removeFirst()
+            }.catch {
+                LogUtils.e(it.toString())
+                when (it) {
+                    is OpenAITimeoutException -> ToastUtils.showLong("连接超时,请检查科学上网连接状态")
+                    is OpenAIAPIException -> {
+                        XPopup.Builder(context)
+                            .asConfirm("提示",it.message,null)
+                            .show()
                     }
-                    contextMsg.addLast("User: ${userMsg?.content}")
-                    contextMsg.addLast("Bot: ${assistantMsg?.content}")
-
-                    LogUtils.d("当前上下文::::\n$contextMsg")
-
-                    if (TextUtils.isEmpty(assistantMsg?.content)) {
-                        adapter.mutable.remove(assistantMsg)
-                    }
-                }.catch {
-                    LogUtils.e(it.toString())
-                    when (it) {
-                        is OpenAITimeoutException -> ToastUtils.showLong("连接超时,请检查科学上网连接状态")
-                        is OpenAIAPIException -> ToastUtils.showLong(it.message)
-                    }
+                    else -> ToastUtils.showLong(it.toString())
                 }
-                .launchIn(scope)
-                .join()
-        }
+            }
+            .launchIn(scope)
+            .join()
     }
 
     private fun addMessage2List(content: String, chatRole: ChatRole) {

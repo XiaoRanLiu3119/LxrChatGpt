@@ -9,6 +9,8 @@ package com.lxr.chat_gpt.constants
 object CacheKey {
 
     const val TOKEN = "token"
+    const val DOMAIN_URL = "domain_url"
+    const val CHAT_MODEL = "chat_model"
 
     const val CONTEXT_COUNT = "token"
 }

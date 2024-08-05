@@ -80,6 +80,10 @@ object MmkvUtil {
         return mmkv?.decodeStringSet(key, Collections.emptySet())
     }
 
+    fun hasKey(key: String):Boolean{
+        return mmkv?.contains(key)?:false
+    }
+
     fun removeKey(key: String) {
         mmkv?.removeValueForKey(key)
     }

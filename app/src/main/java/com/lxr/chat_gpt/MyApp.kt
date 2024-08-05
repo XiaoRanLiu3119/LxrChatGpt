@@ -1,12 +1,9 @@
 package com.lxr.chat_gpt
 
 import android.app.Application
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.drake.brv.utils.BRV
 import com.lxj.xpopup.XPopup
 import com.lxr.chat_gpt.constants.CacheKey
-import com.lxr.chat_gpt.constants.Config
 import com.lxr.chat_gpt.utils.MmkvUtil
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
@@ -15,11 +12,7 @@ import com.tencent.mmkv.MMKV
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import me.jessyan.autosize.AutoSizeConfig
-import okhttp3.OkHttpClient
-import java.time.Duration
 import java.util.concurrent.TimeUnit
-import javax.net.ssl.HostnameVerifier
-import javax.net.ssl.SSLSession
 
 
 /**
@@ -45,9 +38,13 @@ class MyApp : Application() {
         BRV.modelId = BR.m
         // AutoSize配置,不想让 App 内的字体大小跟随系统设置中字体大小的改变
         AutoSizeConfig.getInstance().isExcludeFontScale = true
-        // XPopup配置,主要的颜色,确认按钮文字的颜色/控件选中的颜色等
-        XPopup.setPrimaryColor(R.color.colorPrimary)
         initNet()
+        initDefaultCacheConfig()
+    }
+
+    private fun initDefaultCacheConfig(){
+        if (!MmkvUtil.hasKey(CacheKey.DOMAIN_URL)) MmkvUtil.put(CacheKey.DOMAIN_URL,"https://api.chatanywhere.tech")
+        if (!MmkvUtil.hasKey(CacheKey.CHAT_MODEL)) MmkvUtil.put(CacheKey.CHAT_MODEL,"gpt-3.5-turbo")
     }
 
     private fun initNet() {

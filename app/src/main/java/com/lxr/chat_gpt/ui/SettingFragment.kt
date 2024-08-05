@@ -1,5 +1,6 @@
 package com.lxr.chat_gpt.ui
 
+import com.blankj.utilcode.util.RegexUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.dyne.mj.utils.Utils
 import com.dyne.myktdemo.base.BaseFragment
@@ -22,24 +23,55 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>() {
     override fun initView() {
         binding.rlApiKey.clickNoRepeat {
             XPopup.Builder(this.context)
-                .asInputConfirm("提示","","请输入sk-开头的api-key",object :OnInputConfirmListener{
-                    override fun onConfirm(text: String?) {
-                        when {
-                            text.isNullOrBlank() -> {
-                                ToastUtils.showShort("不可为空,请输入")
-                            }
-                            !text.startsWith("sk-") -> {
-                                ToastUtils.showShort("格式不对,sk-开头的")
-                            }
-                            else -> {
-                                ToastUtils.showShort("成功")
-                                MmkvUtil.put(CacheKey.TOKEN, text)
-                                val mainActivity = getActivity() as MainActivity
-                                mainActivity.updateTab(0)
-                            }
+                .asInputConfirm("提示","",MmkvUtil.getString(CacheKey.TOKEN),"请输入sk-开头的api-key"
+                ) { text ->
+                    when {
+                        text.isNullOrBlank() -> {
+                            ToastUtils.showShort("不可为空,请输入")
+                        }
+
+                        !text.startsWith("sk-") -> {
+                            ToastUtils.showShort("格式不对,sk-开头的")
+                        }
+
+                        else -> {
+                            ToastUtils.showShort("成功")
+                            MmkvUtil.put(CacheKey.TOKEN, text)
+                            val mainActivity = getActivity() as MainActivity
+                            mainActivity.updateTab(0)
                         }
                     }
-                })
+                }
+                .show()
+        }
+
+        binding.rlUrl.clickNoRepeat {
+            XPopup.Builder(this.context)
+                .asInputConfirm("提示","",MmkvUtil.getString(CacheKey.DOMAIN_URL),"请输入"
+                ) { text ->
+                    when {
+                        text.isNullOrBlank() -> {
+                            ToastUtils.showShort("不可为空,请输入")
+                        }
+                        !RegexUtils.isURL(text) -> {
+                            ToastUtils.showShort("格式错误")
+                        }
+                        else -> {
+                            ToastUtils.showShort("成功")
+                            MmkvUtil.put(CacheKey.DOMAIN_URL, text)
+                        }
+                    }
+                }
+                .show()
+        }
+
+        val models = arrayOf("gpt-3.5-turbo", "gpt-4o-mini","gpt-4")
+        binding.rlModel.clickNoRepeat {
+            XPopup.Builder(this.context)
+                .asCenterList("请选择",models,null,models.indexOf(MmkvUtil.getString(CacheKey.CHAT_MODEL))){pos,text ->
+                    MmkvUtil.put(CacheKey.CHAT_MODEL,text)
+                    ToastUtils.showShort("设置成功")
+                }
                 .show()
         }
 

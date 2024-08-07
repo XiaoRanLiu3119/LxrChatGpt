@@ -64,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:hint="输入消息..."
+                android:text="kotlin如何对集合分组"
                 android:maxHeight="120dp"
                 android:minHeight="50dp"
                 android:textSize="12dp" />

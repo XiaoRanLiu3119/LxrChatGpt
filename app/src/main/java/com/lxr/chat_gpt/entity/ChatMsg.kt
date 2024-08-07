@@ -10,5 +10,4 @@ import com.aallam.openai.api.chat.ChatRole
  * @Date        : on 2023/3/16 15:45.
  * @Description :
  */
-@OptIn(BetaOpenAI::class)
 data class ChatMsg(val role: ChatRole, var content: String) : BaseObservable()

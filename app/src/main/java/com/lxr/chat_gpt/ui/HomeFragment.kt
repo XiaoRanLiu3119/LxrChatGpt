@@ -49,7 +49,6 @@ import kotlin.coroutines.cancellation.CancellationException
  * @Date : on 2023/1/11 13:52.
  * @Description :
  */
-@OptIn(BetaOpenAI::class)
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     val conversationLimit = 8
@@ -73,16 +72,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     R.layout.item_msg_right // 我发的消息
                 } else {
                     R.layout.item_msg_left // 对方发的消息
-                }
-            }
-            onBind {
-                val content = getModel<ChatMsg>().content
-                if (content.contains("##") || content.contains("```")){
-                    findView<TextView>(R.id.tv_msg).gone()
-                    findView<TextView>(R.id.tv_msg_two).visible()
-
-                    val markwon = Markwon.create(findView<TextView>(R.id.tv_msg_two).context)
-                    markwon.setMarkdown(findView(R.id.tv_msg_two),content)
                 }
             }
         }
@@ -189,8 +178,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 if (TextUtils.isEmpty(assistantMsg?.content)) {
                     adapter.mutable.remove(assistantMsg)
                 }
-                adapter.notifyItemChanged(adapter.modelCount - 1)
-
             }.catch {
                 LogUtils.e(it.toString())
                 when (it) {

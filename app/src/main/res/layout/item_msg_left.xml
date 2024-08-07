@@ -53,6 +53,16 @@
                 android:textIsSelectable="true"
                 android:textSize="12dp"
                 tools:text="How are you ?" />
+            <TextView
+                android:id="@+id/tv_msg_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:textColor="@color/black"
+                android:textIsSelectable="true"
+                android:textSize="12dp"
+                tools:text="How are you ?" />
+
         </LinearLayout>
 
 

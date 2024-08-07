@@ -2,6 +2,7 @@ package com.lxr.chat_gpt.ui
 
 import android.content.res.ColorStateList
 import android.text.TextUtils
+import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.ChatCompletionRequest
@@ -27,6 +28,7 @@ import com.lxr.chat_gpt.constants.CacheKey
 import com.lxr.chat_gpt.databinding.FragmentHomeBinding
 import com.lxr.chat_gpt.entity.ChatMsg
 import com.lxr.chat_gpt.utils.MmkvUtil
+import io.noties.markwon.Markwon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -61,6 +63,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var currentEditMsg = ""
 
     override fun initView() {
+
         if (MmkvUtil.getString(CacheKey.TOKEN).isNullOrEmpty()) {
             showApiKeyPopup()
         }
@@ -70,6 +73,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     R.layout.item_msg_right // 我发的消息
                 } else {
                     R.layout.item_msg_left // 对方发的消息
+                }
+            }
+            onBind {
+                val content = getModel<ChatMsg>().content
+                if (content.contains("##") || content.contains("```")){
+                    findView<TextView>(R.id.tv_msg).gone()
+                    findView<TextView>(R.id.tv_msg_two).visible()
+
+                    val markwon = Markwon.create(findView<TextView>(R.id.tv_msg_two).context)
+                    markwon.setMarkdown(findView(R.id.tv_msg_two),content)
                 }
             }
         }
@@ -140,7 +153,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 addMessage2List(currentEditMsg, ChatRole.Assistant)
             }
             .onEach {
-                LogUtils.d(it.model.id)
                 binding.tvTipAccepting.text = "typing..."
 
                 val contentStr = it.choices.first().delta?.content.orEmpty()
@@ -177,6 +189,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 if (TextUtils.isEmpty(assistantMsg?.content)) {
                     adapter.mutable.remove(assistantMsg)
                 }
+                adapter.notifyItemChanged(adapter.modelCount - 1)
+
             }.catch {
                 LogUtils.e(it.toString())
                 when (it) {
